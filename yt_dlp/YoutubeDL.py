@@ -1844,6 +1844,7 @@ class YoutubeDL:
                 )
             )
             break_opt, break_err = "break_on_existing", ExistingVideoReachedWithContext
+            return None, info_dict
         else:
             try:
                 reason = check_filter()
@@ -2150,7 +2151,8 @@ class YoutubeDL:
             self.to_screen("AGENTIO-FORK: which ie result two")
             self.to_screen("AGENTIO-FORK: extra info: " + str(extra_info))
             self.to_screen("AGENTIO-FORK: ie_result: " + str(ie_result))
-            return self.process_ie_result(ie_result, download, extra_info)
+            ie_result =  self.process_ie_result(ie_result, download, extra_info)
+            return ie_result
         else:
             return ie_result
 
@@ -2318,6 +2320,7 @@ class YoutubeDL:
             self._sanitize_thumbnails(ie_result)
             try:
                 self.to_screen("AGENTIO-FORK: process ie_ result call")
+                self.to_screen("AGENTIO-FORK: process ie_ result call: " + str(ie_result))
                 return self.__process_playlist(ie_result, download)
             finally:
                 self._playlist_level -= 1
@@ -2390,8 +2393,10 @@ class YoutubeDL:
         common_info = self._playlist_infodict(ie_result, strict=True)
         title = common_info.get("playlist") or "<Untitled>"
         self.to_screen("AGENTIO-FORK: __process_playlist is over here")
-        if self._match_entry(common_info, incomplete=True) is not None:
-            return
+        self.to_screen("AGENTIO-FORK: common_info: " + str(common_info))
+        og_ret, infodict = self._match_entry(common_info, incomplete=True)
+        if og_ret is not None:
+            return infodict
         self.to_screen(f'[download] Downloading {ie_result["_type"]}: {title}')
 
         all_entries = PlaylistEntries(self, ie_result)
