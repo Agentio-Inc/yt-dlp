@@ -2148,6 +2148,8 @@ class YoutubeDL:
         if process:
             self._wait_for_video(ie_result)
             self.to_screen("AGENTIO-FORK: which ie result two")
+            self.to_screen("AGENTIO-FORK: extra info: " + str(extra_info))
+            self.to_screen("AGENTIO-FORK: ie_result: " + str(ie_result))
             return self.process_ie_result(ie_result, download, extra_info)
         else:
             return ie_result
