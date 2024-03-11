@@ -1821,9 +1821,9 @@ class YoutubeDL:
                         return f"Skipping {video_title}"
             return ret
 
-        self.to_screen(
-            "AGENTIO-FORK: info_dict probably for palylist: " + str(info_dict)
-        )
+        # self.to_screen(
+        #     "AGENTIO-FORK: info_dict probably for palylist: " + str(info_dict)
+        # )
         # extract video view count
         # TODO: check if the playlist entries get paginated
         # TODO: figure out how to return from here
