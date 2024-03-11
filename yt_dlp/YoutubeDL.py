@@ -83,6 +83,7 @@ from .utils import (
     DownloadError,
     EntryNotInPlaylist,
     ExistingVideoReached,
+    ExistingVideoReachedWithContext,
     ExtractorError,
     FormatSorter,
     GeoRestrictedError,
@@ -1726,8 +1727,8 @@ class YoutubeDL:
 
         def check_filter():
             if _type in ("playlist", "multi_video"):
-                self.to_screen("check filter for type: " + _type)
-                self.to_screen("infodict here is: " + str(info_dict))
+                self.to_screen("AGENTIO-FORK: check filter for type: " + _type)
+                self.to_screen("AGENTIO-FORK: infodict here is: " + str(info_dict))
                 return
             elif _type in ("url", "url_transparent") and not try_call(
                 lambda: self.get_info_extractor(info_dict["ie_key"]).is_single_video(
@@ -1820,7 +1821,12 @@ class YoutubeDL:
                         return f"Skipping {video_title}"
             return ret
 
-        self.to_screen("info_dict probably for palylist: " + str(info_dict))
+        self.to_screen(
+            "AGENTIO-FORK: info_dict probably for palylist: " + str(info_dict)
+        )
+        # extract video view count
+        # TODO: check if the playlist entries get paginated
+        # TODO: figure out how to return from here
         if self.in_download_archive(info_dict):
             reason = "".join(
                 (
@@ -1837,7 +1843,7 @@ class YoutubeDL:
                     "has already been recorded in the archive",
                 )
             )
-            break_opt, break_err = "break_on_existing", ExistingVideoReached
+            break_opt, break_err = "break_on_existing", ExistingVideoReachedWithContext
         else:
             try:
                 reason = check_filter()
@@ -1849,6 +1855,8 @@ class YoutubeDL:
             if not silent:
                 self.to_screen("[download] " + reason)
             if self.params.get(break_opt, False):
+                if break_opt == "break_on_existing":
+                    raise break_err(extra_info=info_dict)
                 raise break_err()
         return reason
 
@@ -1910,7 +1918,8 @@ class YoutubeDL:
                 url, self.get_info_extractor(key), download, extra_info, process
             )
             self.to_screen(
-                "extracted_info before download_archive: " + str(extracted_info)
+                "AGENTIO-FORK: extracted_info before download_archive: "
+                + str(extracted_info)
             )
             if temp_id is not None and self.in_download_archive(
                 {"id": temp_id, "ie_key": key}
@@ -2113,7 +2122,7 @@ class YoutubeDL:
 
         try:
             ie_result = ie.extract(url)
-            self.to_screen("look at ie result: " + str(ie_result))
+            self.to_screen("AGENTIO-FORK: look at ie result: " + str(ie_result))
         except UserNotLive as e:
             if process:
                 if self.params.get("wait_for_video"):
@@ -4660,7 +4669,7 @@ class YoutubeDL:
         return make_archive_id(extractor, video_id)
 
     def in_download_archive(self, info_dict):
-        self.to_screen("indownloadarchive info_dict: " + str(info_dict))
+        self.to_screen("AGENTIO-FORK: indownloadarchive info_dict: " + str(info_dict))
         if not self.archive:
             return False
 
