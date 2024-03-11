@@ -2317,6 +2317,7 @@ class YoutubeDL:
             self._fill_common_fields(ie_result, False)
             self._sanitize_thumbnails(ie_result)
             try:
+                self.to_screen("AGENTIO-FORK: process ie_ result call")
                 return self.__process_playlist(ie_result, download)
             finally:
                 self._playlist_level -= 1
@@ -2388,6 +2389,7 @@ class YoutubeDL:
 
         common_info = self._playlist_infodict(ie_result, strict=True)
         title = common_info.get("playlist") or "<Untitled>"
+        self.to_screen("AGENTIO-FORK: __process_playlist is over here")
         if self._match_entry(common_info, incomplete=True) is not None:
             return
         self.to_screen(f'[download] Downloading {ie_result["_type"]}: {title}')
