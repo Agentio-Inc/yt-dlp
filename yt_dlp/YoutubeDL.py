@@ -2524,9 +2524,9 @@ class YoutubeDL:
                 self.to_screen("AGENTIO-FORK: two  is: " + str(two))
             except TypeError:
                 one = match_entry
+            if two is not None:
+                info_dicts_kevin.append(two)
             if one is not None:
-                if two is not None:
-                    info_dicts_kevin.append(two)
                 # For compatabilty with youtube-dl. See https://github.com/yt-dlp/yt-dlp/issues/4369
                 resolved_entries[i] = (playlist_index, NO_DEFAULT)
                 continue
