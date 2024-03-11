@@ -4533,7 +4533,7 @@ class YoutubeDL:
                     "force_generic_extractor", False
                 ),
             )
-            self.to_screen("AGENTIO-FORK: i think this happens once")
+            self.to_screen("AGENTIO-FORK: i think this happens once " + str(final_ret))
             
             try:
                 one, two = final_ret
@@ -4541,6 +4541,7 @@ class YoutubeDL:
                 one = final_ret
         
         if two:
+            self.to_screen("AGENTIO-FORK: returning two:: " + str(two))
             return two
         return self._download_retcode
 
