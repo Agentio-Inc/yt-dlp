@@ -1727,8 +1727,8 @@ class YoutubeDL:
 
         def check_filter():
             if _type in ("playlist", "multi_video"):
-                self.to_screen("AGENTIO-FORK: check filter for type: " + _type)
-                self.to_screen("AGENTIO-FORK: infodict here is: " + str(info_dict))
+                # self.to_screen("AGENTIO-FORK: check filter for type: " + _type)
+                # self.to_screen("AGENTIO-FORK: infodict here is: " + str(info_dict))
                 return
             elif _type in ("url", "url_transparent") and not try_call(
                 lambda: self.get_info_extractor(info_dict["ie_key"]).is_single_video(
@@ -1918,10 +1918,10 @@ class YoutubeDL:
             extracted_info = self.__extract_info(
                 url, self.get_info_extractor(key), download, extra_info, process
             )
-            self.to_screen(
-                "AGENTIO-FORK: extracted_info before download_archive: "
-                + str(extracted_info)
-            )
+            # self.to_screen(
+            #     "AGENTIO-FORK: extracted_info before download_archive: "
+            #     + str(extracted_info)
+            # )
             if temp_id is not None and self.in_download_archive(
                 {"id": temp_id, "ie_key": key}
             ):
@@ -2148,10 +2148,10 @@ class YoutubeDL:
         self.add_default_extra_info(ie_result, ie, url)
         if process:
             self._wait_for_video(ie_result)
-            self.to_screen("AGENTIO-FORK: which ie result two")
-            self.to_screen("AGENTIO-FORK: extra info: " + str(extra_info))
+            # self.to_screen("AGENTIO-FORK: which ie result two")
+            # self.to_screen("AGENTIO-FORK: extra info: " + str(extra_info))
             what = self.process_ie_result(ie_result, download, extra_info)
-            self.to_screen("AGENTIO-FORK: what is: " + str(what))
+            # self.to_screen("AGENTIO-FORK: what is: " + str(what))
             # ie_result, other = what
             # self.to_screen("AGENTIO-FORK: ie_result: " + str(ie_result))
             # self.to_screen("AGENTIO-FORK: other: " + str(other))
@@ -2299,7 +2299,7 @@ class YoutubeDL:
             if new_result.get("_type") == "url":
                 new_result["_type"] = "url_transparent"
 
-            self.to_screen("AGENTIO-FORK: which ie result three")
+            # self.to_screen("AGENTIO-FORK: which ie result three")
             return self.process_ie_result(
                 new_result, download=download, extra_info=extra_info
             )
@@ -2322,12 +2322,12 @@ class YoutubeDL:
             self._fill_common_fields(ie_result, False)
             self._sanitize_thumbnails(ie_result)
             try:
-                self.to_screen("AGENTIO-FORK: process ie_ result call")
-                self.to_screen(
-                    "AGENTIO-FORK: process ie_ result call: " + str(ie_result)
-                )
+                # self.to_screen("AGENTIO-FORK: process ie_ result call")
+                # self.to_screen(
+                #     "AGENTIO-FORK: process ie_ result call: " + str(ie_result)
+                # )
                 pp = self.__process_playlist(ie_result, download)
-                self.to_screen("AGENTIO-FORK: process ie_ result call2: " + str(pp))
+                # self.to_screen("AGENTIO-FORK: process ie_ result call2: " + str(pp))
                 two = None
                 try:
                     one, two = pp
@@ -2357,7 +2357,7 @@ class YoutubeDL:
                 )
                 return r
 
-            self.to_screen("AGENTIO-FORK: which ie result four")
+            # self.to_screen("AGENTIO-FORK: which ie result four")
             ie_result["entries"] = [
                 self.process_ie_result(_fixup(r), download, extra_info)
                 for r in ie_result["entries"]
@@ -2404,10 +2404,10 @@ class YoutubeDL:
 
         common_info = self._playlist_infodict(ie_result, strict=True)
         title = common_info.get("playlist") or "<Untitled>"
-        self.to_screen("AGENTIO-FORK: __process_playlist is over here")
-        self.to_screen("AGENTIO-FORK: common_info: " + str(common_info))
+        # self.to_screen("AGENTIO-FORK: __process_playlist is over here")
+        # self.to_screen("AGENTIO-FORK: common_info: " + str(common_info))
         what2 = self._match_entry(common_info, incomplete=True)
-        self.to_screen("AGENTIO-FORK: what2: " + str(what2))
+        # self.to_screen("AGENTIO-FORK: what2: " + str(what2))
         infodict = None
         try:
             og_ret, infodict = what2
@@ -2583,7 +2583,7 @@ class YoutubeDL:
 
     @_handle_extraction_exceptions
     def __process_iterable_entry(self, entry, download, extra_info):
-        self.to_screen("AGENTIO-FORK: which ie result five")
+        # self.to_screen("AGENTIO-FORK: which ie result five")
         return self.process_ie_result(entry, download=download, extra_info=extra_info)
 
     def _build_format_filter(self, filter_spec):
@@ -4539,7 +4539,7 @@ class YoutubeDL:
             ]
         for info in infos:
             try:
-                self.to_screen("AGENTIO-FORK: which ie result one")
+                # self.to_screen("AGENTIO-FORK: which ie result one")
                 self.__download_wrapper(self.process_ie_result)(info, download=True)
             except (DownloadError, EntryNotInPlaylist, ReExtractInfo) as e:
                 if not isinstance(e, EntryNotInPlaylist):
@@ -4713,7 +4713,7 @@ class YoutubeDL:
         return make_archive_id(extractor, video_id)
 
     def in_download_archive(self, info_dict):
-        self.to_screen("AGENTIO-FORK: indownloadarchive info_dict: " + str(info_dict))
+        # self.to_screen("AGENTIO-FORK: indownloadarchive info_dict: " + str(info_dict))
         if not self.archive:
             return False
 
