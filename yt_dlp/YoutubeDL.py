@@ -2518,6 +2518,7 @@ class YoutubeDL:
             )
             match_entry = self._match_entry(entry_copy, incomplete=True, bunch=True)
             two = None
+            self.to_screen("AGENTIO-FORK: match entry is: " + str(match_entry))
             try:
                 one, two = match_entry
             except TypeError:
