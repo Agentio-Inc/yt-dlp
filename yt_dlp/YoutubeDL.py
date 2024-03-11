@@ -4496,19 +4496,27 @@ class YoutubeDL:
     def __download_wrapper(self, func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
+            self.to_screen("AGENTIO-FORK: wrapper")
             try:
                 res = func(*args, **kwargs)
             except UnavailableVideoError as e:
+                self.to_screen("AGENTIO-FORK: wrapper 2")
                 self.report_error(e)
             except DownloadCancelled as e:
                 self.to_screen(f"[info] {e}")
+                self.to_screen("AGENTIO-FORK: wrapper 3")
                 if not self.params.get("break_per_url"):
                     raise
                 self._num_downloads = 0
             else:
+                self.to_screen("AGENTIO-FORK: wrapper 4")
                 if self.params.get("dump_single_json", False):
+                    self.to_screen("AGENTIO-FORK: wrapper 5")
                     self.post_extract(res)
                     self.to_stdout(json.dumps(self.sanitize_info(res)))
+                self.to_screen("AGENTIO-FORK: i think this is where we land")
+                self.to_screen("AGENTIO-FORK: return this " + str(res))
+                return res
 
         return wrapper
 
@@ -4523,7 +4531,7 @@ class YoutubeDL:
             and self.params.get("max_downloads") != 1
         ):
             raise SameFileError(outtmpl)
-        
+
         two = None
 
         for url in url_list:
@@ -4534,12 +4542,12 @@ class YoutubeDL:
                 ),
             )
             self.to_screen("AGENTIO-FORK: i think this happens once " + str(final_ret))
-            
+
             try:
                 one, two = final_ret
             except TypeError:
                 one = final_ret
-        
+
         if two:
             self.to_screen("AGENTIO-FORK: returning two:: " + str(two))
             return two
