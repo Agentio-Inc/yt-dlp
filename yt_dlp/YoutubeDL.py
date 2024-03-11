@@ -1712,7 +1712,7 @@ class YoutubeDL:
 
         return self.get_output_path(dir_type, filename)
 
-    def _match_entry(self, info_dict, incomplete=False, silent=False):
+    def _match_entry(self, info_dict, incomplete=False, silent=False, bunch=False):
         """Returns None if the file should be downloaded"""
         _type = (
             "video"
@@ -1844,11 +1844,12 @@ class YoutubeDL:
                 )
             )
             break_opt, break_err = "break_on_existing", ExistingVideoReachedWithContext
-            self.to_screen(
-                "AGENTIO-FORK: RETURNING INFO DICT WHICH IS SUPPOSEDLY  POPULATED "
-                + str(info_dict)
-            )
-            return None, info_dict
+            if bunch:
+                self.to_screen(
+                    "AGENTIO-FORK: RETURNING INFO DICT WHICH IS SUPPOSEDLY  POPULATED "
+                    + str(info_dict)
+                )
+                return None, info_dict
         else:
             try:
                 reason = check_filter()
@@ -2515,7 +2516,7 @@ class YoutubeDL:
             self.to_screen(
                 "AGENTIO-FORK: i think this is where each inividual playlist item is downloaded"
             )
-            match_entry = self._match_entry(entry_copy, incomplete=True)
+            match_entry = self._match_entry(entry_copy, incomplete=True, bunch=True)
             two = None
             try:
                 one, two = match_entry
