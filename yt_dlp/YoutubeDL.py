@@ -1820,6 +1820,7 @@ class YoutubeDL:
                         return f"Skipping {video_title}"
             return ret
 
+        self.to_screen("info_dict probably for palylist: " + str(info_dict))
         if self.in_download_archive(info_dict):
             reason = "".join(
                 (
