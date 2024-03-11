@@ -2113,6 +2113,7 @@ class YoutubeDL:
 
         try:
             ie_result = ie.extract(url)
+            self.to_screen("look at ie result: " + str(ie_result))
         except UserNotLive as e:
             if process:
                 if self.params.get("wait_for_video"):
