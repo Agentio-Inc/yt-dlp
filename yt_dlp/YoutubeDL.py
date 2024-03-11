@@ -2326,7 +2326,14 @@ class YoutubeDL:
                 self.to_screen(
                     "AGENTIO-FORK: process ie_ result call: " + str(ie_result)
                 )
-                return self.__process_playlist(ie_result, download)
+                pp = self.__process_playlist(ie_result, download)
+                self.to_screen("AGENTIO-FORK: process ie_ result call2: " + str(pp))
+                two = None
+                try:
+                    one, two = pp
+                except ValueError:
+                    one = pp
+                return one, two
             finally:
                 self._playlist_level -= 1
                 if not self._playlist_level:
@@ -2481,6 +2488,7 @@ class YoutubeDL:
 
         failures = 0
         max_failures = self.params.get("skip_playlist_after_errors") or float("inf")
+        info_dicts_kevin = []
         for i, (playlist_index, entry) in enumerate(entries):
             if lazy:
                 resolved_entries.append((playlist_index, entry))
@@ -2500,8 +2508,18 @@ class YoutubeDL:
                     "playlist_autonumber": i + 1,
                 },
             )
-
-            if self._match_entry(entry_copy, incomplete=True) is not None:
+            self.to_screen(
+                "AGENTIO-FORK: i think this is where each inividual playlist item is downloaded"
+            )
+            match_entry = self._match_entry(entry_copy, incomplete=True)
+            two = None
+            try:
+                one, two = match_entry
+            except TypeError:
+                one = match_entry
+            if one is not None:
+                if two:
+                    info_dicts_kevin.append(two)
                 # For compatabilty with youtube-dl. See https://github.com/yt-dlp/yt-dlp/issues/4369
                 resolved_entries[i] = (playlist_index, NO_DEFAULT)
                 continue
@@ -2561,7 +2579,7 @@ class YoutubeDL:
 
         ie_result = self.run_all_pps("playlist", ie_result)
         self.to_screen(f"[download] Finished downloading playlist: {title}")
-        return ie_result
+        return ie_result, info_dicts_kevin
 
     @_handle_extraction_exceptions
     def __process_iterable_entry(self, entry, download, extra_info):
