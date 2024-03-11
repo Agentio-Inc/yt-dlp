@@ -2147,6 +2147,7 @@ class YoutubeDL:
         self.add_default_extra_info(ie_result, ie, url)
         if process:
             self._wait_for_video(ie_result)
+            self.to_screen("AGENTIO-FORK: which ie result two")
             return self.process_ie_result(ie_result, download, extra_info)
         else:
             return ie_result
@@ -2291,6 +2292,7 @@ class YoutubeDL:
             if new_result.get("_type") == "url":
                 new_result["_type"] = "url_transparent"
 
+            self.to_screen("AGENTIO-FORK: which ie result three")
             return self.process_ie_result(
                 new_result, download=download, extra_info=extra_info
             )
@@ -2337,6 +2339,7 @@ class YoutubeDL:
                 )
                 return r
 
+            self.to_screen("AGENTIO-FORK: which ie result four")
             ie_result["entries"] = [
                 self.process_ie_result(_fixup(r), download, extra_info)
                 for r in ie_result["entries"]
@@ -2541,6 +2544,7 @@ class YoutubeDL:
 
     @_handle_extraction_exceptions
     def __process_iterable_entry(self, entry, download, extra_info):
+        self.to_screen("AGENTIO-FORK: which ie result five")
         return self.process_ie_result(entry, download=download, extra_info=extra_info)
 
     def _build_format_filter(self, filter_spec):
@@ -4496,6 +4500,7 @@ class YoutubeDL:
             ]
         for info in infos:
             try:
+                self.to_screen("AGENTIO-FORK: which ie result one")
                 self.__download_wrapper(self.process_ie_result)(info, download=True)
             except (DownloadError, EntryNotInPlaylist, ReExtractInfo) as e:
                 if not isinstance(e, EntryNotInPlaylist):
