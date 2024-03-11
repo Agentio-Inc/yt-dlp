@@ -2399,7 +2399,9 @@ class YoutubeDL:
         title = common_info.get("playlist") or "<Untitled>"
         self.to_screen("AGENTIO-FORK: __process_playlist is over here")
         self.to_screen("AGENTIO-FORK: common_info: " + str(common_info))
-        og_ret, infodict = self._match_entry(common_info, incomplete=True)
+        what2 = self._match_entry(common_info, incomplete=True)
+        self.to_screen("AGENTIO-FORK: what2: " + str(what2))
+        og_ret, infodict = what2
         if og_ret is not None:
             return infodict
         self.to_screen(f'[download] Downloading {ie_result["_type"]}: {title}')
