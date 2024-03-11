@@ -2150,8 +2150,10 @@ class YoutubeDL:
             self._wait_for_video(ie_result)
             self.to_screen("AGENTIO-FORK: which ie result two")
             self.to_screen("AGENTIO-FORK: extra info: " + str(extra_info))
+
+            ie_result, other = self.process_ie_result(ie_result, download, extra_info)
             self.to_screen("AGENTIO-FORK: ie_result: " + str(ie_result))
-            ie_result =  self.process_ie_result(ie_result, download, extra_info)
+            self.to_screen("AGENTIO-FORK: other: " + str(other))
             return ie_result
         else:
             return ie_result
@@ -2320,7 +2322,9 @@ class YoutubeDL:
             self._sanitize_thumbnails(ie_result)
             try:
                 self.to_screen("AGENTIO-FORK: process ie_ result call")
-                self.to_screen("AGENTIO-FORK: process ie_ result call: " + str(ie_result))
+                self.to_screen(
+                    "AGENTIO-FORK: process ie_ result call: " + str(ie_result)
+                )
                 return self.__process_playlist(ie_result, download)
             finally:
                 self._playlist_level -= 1
