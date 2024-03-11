@@ -1844,7 +1844,10 @@ class YoutubeDL:
                 )
             )
             break_opt, break_err = "break_on_existing", ExistingVideoReachedWithContext
-            self.to_screen("AGENTIO-FORK: RETURNING INFO DICT WHICH IS SUPPOSEDLY  POPULATED")
+            self.to_screen(
+                "AGENTIO-FORK: RETURNING INFO DICT WHICH IS SUPPOSEDLY  POPULATED "
+                + str(info_dict)
+            )
             return None, info_dict
         else:
             try:
