@@ -4523,16 +4523,25 @@ class YoutubeDL:
             and self.params.get("max_downloads") != 1
         ):
             raise SameFileError(outtmpl)
+        
+        two = None
 
         for url in url_list:
-            self.__download_wrapper(self.extract_info)(
+            final_ret = self.__download_wrapper(self.extract_info)(
                 url,
                 force_generic_extractor=self.params.get(
                     "force_generic_extractor", False
                 ),
             )
             self.to_screen("AGENTIO-FORK: i think this happens once")
-
+            
+            try:
+                one, two = final_ret
+            except TypeError:
+                one = final_ret
+        
+        if two:
+            return two
         return self._download_retcode
 
     def download_with_info_file(self, info_filename):
