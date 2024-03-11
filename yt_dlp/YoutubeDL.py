@@ -2579,6 +2579,7 @@ class YoutubeDL:
 
         ie_result = self.run_all_pps("playlist", ie_result)
         self.to_screen(f"[download] Finished downloading playlist: {title}")
+        self.to_screen("AGENTIO-FORK: LEN OF KEVIN" + len(info_dicts_kevin))
         return ie_result, info_dicts_kevin
 
     @_handle_extraction_exceptions
@@ -4523,6 +4524,7 @@ class YoutubeDL:
                     "force_generic_extractor", False
                 ),
             )
+            self.to_screen("AGENTIO-FORK: i think this happens once")
 
         return self._download_retcode
 
