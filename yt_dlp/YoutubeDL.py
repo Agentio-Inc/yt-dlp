@@ -4654,6 +4654,7 @@ class YoutubeDL:
         return make_archive_id(extractor, video_id)
 
     def in_download_archive(self, info_dict):
+        self.to_screen("indownloadarchive info_dict: " + str(info_dict))
         if not self.archive:
             return False
 
