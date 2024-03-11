@@ -1439,7 +1439,7 @@ class YoutubeDL:
 
         return self.get_output_path(dir_type, filename)
 
-    def _match_entry(self, info_dict, incomplete=False, silent=False):
+    def _match_entry(self, info_dict, incomplete=False, silent=False, return_info_dict=False):
         """Returns None if the file should be downloaded"""
         _type = 'video' if 'playlist-match-filter' in self.params['compat_opts'] else info_dict.get('_type', 'video')
         assert incomplete or _type == 'video', 'Only video result can be considered complete'
@@ -1516,6 +1516,8 @@ class YoutubeDL:
                 format_field(info_dict, 'title', f'{self._format_screen("%s", self.Styles.EMPHASIS)} '),
                 'has already been recorded in the archive'))
             break_opt, break_err = 'break_on_existing', ExistingVideoReached
+            if return_info_dict:
+                return None, info_dict
         else:
             try:
                 reason = check_filter()
@@ -1523,11 +1525,18 @@ class YoutubeDL:
                 reason, break_opt, break_err = e.msg, 'match_filter', type(e)
             else:
                 break_opt, break_err = 'break_on_reject', RejectedVideoReached
+                self.to_screen("AGENTIO: rejecred video reached in here")
         if reason is not None:
+            self.to_screen("AGENTIO: rejecred video reached in here2")
             if not silent:
+                self.to_screen("AGENTIO: rejecred video reached in here3")
                 self.to_screen('[download] ' + reason)
             if self.params.get(break_opt, False):
+                self.to_screen("AGENTIO: rejecred video reached in her4 " + str(break_err))
                 raise break_err()
+        self.to_screen("AGENTIO: rejecred video reached in here5 " + str(reason))
+        if return_info_dict:
+            return reason, info_dict
         return reason
 
     @staticmethod
@@ -1564,8 +1573,9 @@ class YoutubeDL:
             ies = {ie_key: self._ies[ie_key]} if ie_key in self._ies else {}
         else:
             ies = self._ies
-
+        self.to_screen("AGENTIO: extract info i guess, url: " + str(url))
         for key, ie in ies.items():
+            self.to_screen("AGENTIO: extract info loop, " + str(key) + "//" + str(ie))
             if not ie.suitable(url):
                 continue
 
@@ -1580,7 +1590,9 @@ class YoutubeDL:
                 if self.params.get('break_on_existing', False):
                     raise ExistingVideoReached()
                 break
-            return self.__extract_info(url, self.get_info_extractor(key), download, extra_info, process)
+            self.to_screen("AGENTIO: extract info 5")
+            abc =  self.__extract_info(url, self.get_info_extractor(key), download, extra_info, process)
+            return abc
         else:
             extractors_restricted = self.params.get('allowed_extractors') not in (None, ['default'])
             self.report_error(f'No suitable extractor{format_field(ie_key, None, " (%s)")} found for URL {url}',
@@ -1723,7 +1735,9 @@ class YoutubeDL:
 
     @_handle_extraction_exceptions
     def __extract_info(self, url, ie, download, extra_info, process):
+        self.to_screen("AGENTIO: url before headers: " + str(url))
         self._apply_header_cookies(url)
+        self.to_screen("AGENTIO: url after headers: " + str(url))
 
         try:
             ie_result = ie.extract(url)
@@ -1747,6 +1761,7 @@ class YoutubeDL:
         self.add_default_extra_info(ie_result, ie, url)
         if process:
             self._wait_for_video(ie_result)
+            self.to_screen("AGENTIO: process_ie_result 1")
             return self.process_ie_result(ie_result, download, extra_info)
         else:
             return ie_result
@@ -1806,6 +1821,7 @@ class YoutubeDL:
 
         if result_type == 'video':
             self.add_extra_info(ie_result, extra_info)
+            self.to_screen("AGENTIO: PROCESS VIDEO RESULT")
             ie_result = self.process_video_result(ie_result, download=download)
             self._raise_pending_errors(ie_result)
             additional_urls = (ie_result or {}).get('additional_urls')
@@ -1816,6 +1832,7 @@ class YoutubeDL:
                 self.to_screen(
                     '[info] %s: %d additional URL(s) requested' % (ie_result['id'], len(additional_urls)))
                 self.write_debug('Additional URLs: "%s"' % '", "'.join(additional_urls))
+                self.to_screen("AGENTIO: extract info 1")
                 ie_result['additional_entries'] = [
                     self.extract_info(
                         url, download, extra_info=extra_info,
@@ -1826,12 +1843,15 @@ class YoutubeDL:
         elif result_type == 'url':
             # We have to add extra_info to the results because it may be
             # contained in a playlist
+            self.to_screen("AGENTIO: i think this is where in the process ie result it is")
+            self.to_screen("AGENTIO: extract info 2")
             return self.extract_info(
                 ie_result['url'], download,
                 ie_key=ie_result.get('ie_key'),
                 extra_info=extra_info)
         elif result_type == 'url_transparent':
             # Use the information from the embedding page
+            self.to_screen("AGENTIO: extract info 3")
             info = self.extract_info(
                 ie_result['url'], ie_key=ie_result.get('ie_key'),
                 extra_info=extra_info, download=False, process=False)
@@ -1858,7 +1878,7 @@ class YoutubeDL:
             # fixes issue from https://github.com/ytdl-org/youtube-dl/pull/11163.
             if new_result.get('_type') == 'url':
                 new_result['_type'] = 'url_transparent'
-
+            self.to_screen("AGENTIO: process_ie_result 2")
             return self.process_ie_result(
                 new_result, download=download, extra_info=extra_info)
         elif result_type in ('playlist', 'multi_video'):
@@ -1876,7 +1896,14 @@ class YoutubeDL:
             self._fill_common_fields(ie_result, False)
             self._sanitize_thumbnails(ie_result)
             try:
-                return self.__process_playlist(ie_result, download)
+                self.to_screen("AGENTIO: process_playlist" )
+                processed_playlist_res = self.__process_playlist(ie_result, download)
+                agentio_info_dict = None
+                try:
+                    original_res, agentio_info_dict = processed_playlist_res
+                except ValueError:
+                    original_res = processed_playlist_res
+                return original_res, agentio_info_dict
             finally:
                 self._playlist_level -= 1
                 if not self._playlist_level:
@@ -1895,6 +1922,7 @@ class YoutubeDL:
                     'extractor_key': ie_result['extractor_key'],
                 })
                 return r
+            self.to_screen("AGENTIO: process_ie_result 3")
             ie_result['entries'] = [
                 self.process_ie_result(_fixup(r), download, extra_info)
                 for r in ie_result['entries']
@@ -1939,6 +1967,8 @@ class YoutubeDL:
 
         common_info = self._playlist_infodict(ie_result, strict=True)
         title = common_info.get('playlist') or '<Untitled>'
+
+        self.to_screen("AGENTIO: searching match_entry 1")
         if self._match_entry(common_info, incomplete=True) is not None:
             return
         self.to_screen(f'[download] Downloading {ie_result["_type"]}: {title}')
@@ -1947,6 +1977,7 @@ class YoutubeDL:
         entries = orderedSet(all_entries.get_requested_items(), lazy=True)
 
         lazy = self.params.get('lazy_playlist')
+        self.to_screen("AGENTIO: is lazy??? " + str(lazy))
         if lazy:
             resolved_entries, n_entries = [], 'N/A'
             ie_result['requested_entries'], ie_result['entries'] = None, None
@@ -1954,6 +1985,7 @@ class YoutubeDL:
             entries = resolved_entries = list(entries)
             n_entries = len(resolved_entries)
             ie_result['requested_entries'], ie_result['entries'] = tuple(zip(*resolved_entries)) or ([], [])
+            self.to_screen("AGENTIO: outcome of write????? " + str(ie_result))
         if not ie_result.get('playlist_count'):
             # Better to do this after potentially exhausting entries
             ie_result['playlist_count'] = all_entries.get_full_count()
@@ -1963,9 +1995,13 @@ class YoutubeDL:
 
         _infojson_written = False
         write_playlist_files = self.params.get('allow_playlist_files', True)
+        self.to_screen("AGENTIO: write playlistfiles: " + str(write_playlist_files))
+        self.to_screen("AGENTIO: simulate: " + str(self.params.get("simulate")))
         if write_playlist_files and self.params.get('list_thumbnails'):
             self.list_thumbnails(ie_result)
         if write_playlist_files and not self.params.get('simulate'):
+            self.to_screen("AGENTIO: WRITING PL INFO JSON MAYBE??")
+            self.to_screen("AGENTIO: the ie result: " + str(ie_result))
             _infojson_written = self._write_info_json(
                 'playlist', ie_result, self.prepare_filename(ie_copy, 'pl_infojson'))
             if _infojson_written is None:
@@ -1992,9 +2028,15 @@ class YoutubeDL:
             keep_resolved_entries = ie_result['_type'] != 'playlist'
         if keep_resolved_entries:
             self.write_debug('The information of all playlist entries will be held in memory')
+        self.to_screen("AGENTIO: keep resolved entries1: " + str(keep_resolved_entries))
+        keep_resolved_entries = False
+        agentio_playlist_meta = json.dumps(list(entries))
+        self.to_screen("AGENTIO: keep resolved entries2: " + str(keep_resolved_entries))
+        self.to_screen("AGENTIO: all entries: " + str(agentio_playlist_meta))
 
         failures = 0
         max_failures = self.params.get('skip_playlist_after_errors') or float('inf')
+        agentio_info_dicts = []
         for i, (playlist_index, entry) in enumerate(entries):
             if lazy:
                 resolved_entries.append((playlist_index, entry))
@@ -2011,8 +2053,27 @@ class YoutubeDL:
                 'playlist_index': playlist_index,
                 'playlist_autonumber': i + 1,
             })
+            try:
+                self.to_screen("AGENTIO: searching match_entry 2")
+                match_entry = self._match_entry(entry_copy, incomplete=True, return_info_dict=True)
+            except RejectedVideoReached:
+                self.to_screen("AGENTIO: RejectedVideoReached but it was caught")
+                break
+            except Exception as e:
+                self.to_screen("AGENTIO: generic exception: " + str(e))
+                break
+            self.to_screen("AGENTIO: this has to be hit right??")
+            
 
-            if self._match_entry(entry_copy, incomplete=True) is not None:
+            agentio_info_dict = None
+            try:
+                original_ret, agentio_info_dict = match_entry
+            except (TypeError, ValueError):
+                original_ret = match_entry
+            if agentio_info_dict is not None:
+                agentio_info_dicts.append(agentio_info_dict)
+
+            if original_ret is not None:
                 # For compatabilty with youtube-dl. See https://github.com/yt-dlp/yt-dlp/issues/4369
                 resolved_entries[i] = (playlist_index, NO_DEFAULT)
                 continue
@@ -2020,10 +2081,17 @@ class YoutubeDL:
             self.to_screen('[download] Downloading item %s of %s' % (
                 self._format_screen(i + 1, self.Styles.ID), self._format_screen(n_entries, self.Styles.EMPHASIS)))
 
-            entry_result = self.__process_iterable_entry(entry, download, collections.ChainMap({
-                'playlist_index': playlist_index,
-                'playlist_autonumber': i + 1,
-            }, extra))
+            self.to_screen("AGENTIO: RIGHT HERE")
+            try:
+                entry_result = self.__process_iterable_entry(entry, download, collections.ChainMap({
+                    'playlist_index': playlist_index,
+                    'playlist_autonumber': i + 1,
+                }, extra))
+            except RejectedVideoReached:
+                self.to_screen("AGENTIO: RejectedVideoReached")
+                break
+
+            self.to_screen("AGENTIO: entry_result: " + str(entry_result))
             if not entry_result:
                 failures += 1
             if failures >= max_failures:
@@ -2041,6 +2109,9 @@ class YoutubeDL:
             ie_result.pop('requested_entries')
 
         # Write the updated info to json
+        self.to_screen("AGENTIO: WRITING PL INFO JSON MAYBE?? 2222: " + str(_infojson_written))
+        self.to_screen("AGENTIO: updated ie_result i guess???: " + str(ie_result))
+        self.to_screen("AGENTIO: updated ie_copy i guess???: " + str(ie_copy))
         if _infojson_written is True and self._write_info_json(
                 'updated playlist', ie_result,
                 self.prepare_filename(ie_copy, 'pl_infojson'), overwrite=True) is None:
@@ -2048,10 +2119,11 @@ class YoutubeDL:
 
         ie_result = self.run_all_pps('playlist', ie_result)
         self.to_screen(f'[download] Finished downloading playlist: {title}')
-        return ie_result
+        return ie_result, agentio_playlist_meta
 
     @_handle_extraction_exceptions
     def __process_iterable_entry(self, entry, download, extra_info):
+        self.to_screen("AGENTIO: process_ie_result 4")
         return self.process_ie_result(
             entry, download=download, extra_info=extra_info)
 
@@ -2871,7 +2943,7 @@ class YoutubeDL:
             info_dict['formats'] = formats
 
         info_dict, _ = self.pre_process(info_dict)
-
+        self.to_screen("AGENTIO: searching match_entry 3")
         if self._match_entry(info_dict, incomplete=self._format_fields) is not None:
             return info_dict
 
@@ -3172,7 +3244,7 @@ class YoutubeDL:
 
         if 'format' not in info_dict and 'ext' in info_dict:
             info_dict['format'] = info_dict['ext']
-
+        self.to_screen("AGENTIO: searching match_entry 4")
         if self._match_entry(info_dict) is not None:
             info_dict['__write_download_archive'] = 'ignore'
             return
@@ -3542,6 +3614,7 @@ class YoutubeDL:
                 if self.params.get('dump_single_json', False):
                     self.post_extract(res)
                     self.to_stdout(json.dumps(self.sanitize_info(res)))
+                return res
         return wrapper
 
     def download(self, url_list):
@@ -3554,9 +3627,19 @@ class YoutubeDL:
                 and self.params.get('max_downloads') != 1):
             raise SameFileError(outtmpl)
 
+        agentio_info_dicts = []
         for url in url_list:
-            self.__download_wrapper(self.extract_info)(
+            self.to_screen("AGENTIO: LOOPING THROUGH URL_LIST but i think only once?")
+            self.to_screen("AGENTIO: extract info 4")
+            final_ret = self.__download_wrapper(self.extract_info)(
                 url, force_generic_extractor=self.params.get('force_generic_extractor', False))
+            try:
+                original_ret, agentio_info_dicts = final_ret
+            except (TypeError, ValueError):
+                original_ret = final_ret
+        
+        if agentio_info_dicts:
+            return agentio_info_dicts
 
         return self._download_retcode
 
@@ -3569,6 +3652,7 @@ class YoutubeDL:
                      for info in variadic(json.loads('\n'.join(f)))]
         for info in infos:
             try:
+                self.to_screen("AGENTIO: process_ie_result 5")
                 self.__download_wrapper(self.process_ie_result)(info, download=True)
             except (DownloadError, EntryNotInPlaylist, ReExtractInfo) as e:
                 if not isinstance(e, EntryNotInPlaylist):
@@ -4201,7 +4285,11 @@ class YoutubeDL:
 
         self.to_screen(f'[info] Writing {label} metadata as JSON to: {infofn}')
         try:
-            write_json_file(self.sanitize_info(ie_result, self.params.get('clean_infojson', True)), infofn)
+            self.to_screen("AGENTIO: remove private keys: " + str(self.params.get('clean_infojson', True)))
+            obj = self.sanitize_info(ie_result, self.params.get('clean_infojson', True))
+            self.to_screen("AGENTIO: obj to wirte: " + str(obj))
+            self.to_screen("AGENTIO: dir to to wirte: " + str(infofn))
+            write_json_file(obj, infofn)
             return True
         except OSError:
             self.report_error(f'Cannot write {label} metadata to JSON file {infofn}')
