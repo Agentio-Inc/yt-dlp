@@ -1905,6 +1905,13 @@ class YoutubeDL:
                 )
 
             temp_id = ie.get_temp_id(url)
+
+            extracted_info = self.__extract_info(
+                url, self.get_info_extractor(key), download, extra_info, process
+            )
+            self.to_screen(
+                "extracted_info before download_archive: " + str(extracted_info)
+            )
             if temp_id is not None and self.in_download_archive(
                 {"id": temp_id, "ie_key": key}
             ):
@@ -1915,9 +1922,7 @@ class YoutubeDL:
                 if self.params.get("break_on_existing", False):
                     raise ExistingVideoReached()
                 break
-            return self.__extract_info(
-                url, self.get_info_extractor(key), download, extra_info, process
-            )
+            return extracted_info
         else:
             extractors_restricted = self.params.get("allowed_extractors") not in (
                 None,
